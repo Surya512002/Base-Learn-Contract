@@ -1,0 +1,114 @@
+This  one is Tricky one..So Deploy Correctly ..Follow these steps correctly
+
+First create a File name Called- Inheritance Exercise
+
+Then Copy the below code And Paste in Remix
+
+This is where Tricky part is comes..Before Deploy click Contract in that site..it will sit above the Deploy Button..There you can Find many contracts..
+
+First You need to Deploy the salesperson contract only..Then next deploy Engineering manager..Copy these two contracts contract address 
+and click the inheristance submission contract there you need to paste these two contract addresss and Deploy in that..That's all
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/* -------------------------------------------------------------------------- */
+/*                            Abstract Base Contract                          */
+/* -------------------------------------------------------------------------- */
+abstract contract Employee {
+    uint public idNumber;
+    uint public managerId;
+
+    constructor(uint _idNumber, uint _managerId) {
+        idNumber = _idNumber;
+        managerId = _managerId;
+    }
+
+    // Must be implemented by child contracts
+    function getAnnualCost() public view virtual returns (uint);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Salaried Employee                             */
+/* -------------------------------------------------------------------------- */
+contract Salaried is Employee {
+    uint public annualSalary;
+
+    constructor(uint _idNumber, uint _managerId, uint _annualSalary)
+        Employee(_idNumber, _managerId)
+    {
+        annualSalary = _annualSalary;
+    }
+
+    function getAnnualCost() public view override returns (uint) {
+        return annualSalary;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Hourly Employee                              */
+/* -------------------------------------------------------------------------- */
+contract Hourly is Employee {
+    uint public hourlyRate;
+
+    constructor(uint _idNumber, uint _managerId, uint _hourlyRate)
+        Employee(_idNumber, _managerId)
+    {
+        hourlyRate = _hourlyRate;
+    }
+
+    // 2080 working hours per year (40 hours × 52 weeks)
+    function getAnnualCost() public view override returns (uint) {
+        return hourlyRate * 2080;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Manager                                   */
+/* -------------------------------------------------------------------------- */
+contract Manager {
+    uint[] public reportIds;
+
+    function addReport(uint _employeeId) public {
+        reportIds.push(_employeeId);
+    }
+
+    function resetReports() public {
+        delete reportIds;
+    }
+
+    function getReports() public view returns (uint[] memory) {
+        return reportIds;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Salesperson                                 */
+/* -------------------------------------------------------------------------- */
+contract Salesperson is Hourly {
+    constructor()
+        Hourly(55555, 12345, 20) // idNumber = 55555, managerId = 12345, hourlyRate = 20
+    {}
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Engineering Manager                              */
+/* -------------------------------------------------------------------------- */
+contract EngineeringManager is Salaried, Manager {
+    constructor()
+        Salaried(54321, 11111, 200000) // idNumber = 54321, managerId = 11111, annualSalary = 200000
+    {}
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Inheritance Submission                            */
+/* -------------------------------------------------------------------------- */
+contract InheritanceSubmission {
+    address public salesPerson;
+    address public engineeringManager;
+
+    constructor(address _salesPerson, address _engineeringManager) {
+        salesPerson = _salesPerson;
+        engineeringManager = _engineeringManager;
+    }
+}
