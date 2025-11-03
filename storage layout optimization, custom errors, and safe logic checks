@@ -1,0 +1,89 @@
+Create a File name called EmployeeStorage.sol
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EmployeeStorage {
+    // Custom error when granting would exceed allowed shares
+    error TooManyShares(uint256 totalShares);
+
+    // Storage optimized for packing:
+    // salary fits in uint32 (max 1,000,000)
+    // shares fits in uint16 (we only allow up to 5000)
+    uint32 private salary;
+    uint16 private shares;
+
+    // Public variables
+    string public name;
+    uint256 public idNumber;
+
+    // Constructor sets the required initial values for the test
+    constructor() {
+        shares = 1000;                     // initial shares
+        name = "Pat";                      // initial name
+        salary = 50000;                    // initial salary
+        idNumber = 112358132134;           // initial idNumber
+    }
+
+    /// @notice Return salary (as uint256 for test compatibility)
+    function viewSalary() public view returns (uint256) {
+        return uint256(salary);
+    }
+
+    /// @notice Return shares (as uint256 for test compatibility)
+    function viewShares() public view returns (uint256) {
+        return uint256(shares);
+    }
+
+    /**
+     * @notice Grant additional shares to the employee
+     * @param _newShares number of new shares to add
+     *
+     * Requirements & behavior:
+     * - If _newShares > 5000 revert with string "Too many shares"
+     * - Compute newTotal = shares + _newShares
+     * - If newTotal > 5000 revert with custom error TooManyShares(newTotal)
+     * - Otherwise update shares
+     */
+    function grantShares(uint256 _newShares) public {
+        // Immediate check: too many in one grant
+        if (_newShares > 5000) {
+            revert("Too many shares");
+        }
+
+        // Compute new total safely using uint256 and then cast after checks
+        uint256 newTotal = uint256(shares) + _newShares;
+
+        if (newTotal > 5000) {
+            revert TooManyShares(newTotal);
+        }
+
+        // Safe to update (fits in uint16)
+        shares = uint16(newTotal);
+    }
+
+    /**
+    * Do not modify this function.  It is used to enable the unit test for this pin
+    * to check whether or not you have configured your storage variables to make
+    * use of packing.
+    *
+    * If you wish to cheat, simply modify this function to always return `0`
+    * I'm not your boss ¯\_(ツ)_/¯
+    *
+    * Fair warning though, if you do cheat, it will be on the blockchain having been
+    * deployed by your wallet....FOREVER!
+    */
+    function checkForPacking(uint _slot) public view returns (uint r) {
+        assembly {
+            r := sload (_slot)
+        }
+    }
+
+    /**
+    * Warning: Anyone can use this function at any time!
+    */
+    function debugResetShares() public {
+        shares = 1000;
+    }
+}
