@@ -1,3 +1,7 @@
+Create File Name Called BasicMath.sol in Remix Studio..
+
+Copy this below code And Deploy that on Base Sepolia..Don't Forgot You need to Deploy this on Base sepolia Testnet
+
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
