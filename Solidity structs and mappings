@@ -1,0 +1,103 @@
+File name:- GarageManager.sol
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title GarageManager
+ * @dev Manage cars owned by each user using structs and mappings
+ */
+contract GarageManager {
+
+    // --- Custom Error ---
+    error BadCarIndex(uint256 index);
+
+    // --- Struct Definition ---
+    struct Car {
+        string make;
+        string model;
+        string color;
+        uint8 numberOfDoors; // compact type (since small integer)
+    }
+
+    // --- Storage ---
+    // Each address maps to an array of Car structs
+    mapping(address => Car[]) public garage;
+
+    // --- Add a Car ---
+    /**
+     * @notice Adds a new car to the caller's garage
+     * @param _make Car make (e.g., Tesla)
+     * @param _model Car model (e.g., Model S)
+     * @param _color Car color (e.g., Red)
+     * @param _numberOfDoors Number of doors on the car
+     */
+    function addCar(
+        string memory _make,
+        string memory _model,
+        string memory _color,
+        uint8 _numberOfDoors
+    ) public {
+        Car memory newCar = Car({
+            make: _make,
+            model: _model,
+            color: _color,
+            numberOfDoors: _numberOfDoors
+        });
+        garage[msg.sender].push(newCar);
+    }
+
+    // --- Get Cars for Caller ---
+    /**
+     * @notice Returns all cars owned by the caller
+     */
+    function getMyCars() public view returns (Car[] memory) {
+        return garage[msg.sender];
+    }
+
+    // --- Get Cars for Any User ---
+    /**
+     * @notice Returns all cars for a given user address
+     * @param _user The address of the user
+     */
+    function getUserCars(address _user) public view returns (Car[] memory) {
+        return garage[_user];
+    }
+
+    // --- Update Car ---
+    /**
+     * @notice Updates a specific car in caller's garage
+     * @param _index Index of the car in the array
+     * @param _make New make
+     * @param _model New model
+     * @param _color New color
+     * @param _numberOfDoors New number of doors
+     */
+    function updateCar(
+        uint256 _index,
+        string memory _make,
+        string memory _model,
+        string memory _color,
+        uint8 _numberOfDoors
+    ) public {
+        // Validate index exists
+        if (_index >= garage[msg.sender].length) {
+            revert BadCarIndex(_index);
+        }
+
+        Car storage carToUpdate = garage[msg.sender][_index];
+        carToUpdate.make = _make;
+        carToUpdate.model = _model;
+        carToUpdate.color = _color;
+        carToUpdate.numberOfDoors = _numberOfDoors;
+    }
+
+    // --- Reset Garage ---
+    /**
+     * @notice Deletes all cars for the caller
+     */
+    function resetMyGarage() public {
+        delete garage[msg.sender];
+    }
+}
