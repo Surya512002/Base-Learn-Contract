@@ -1,0 +1,43 @@
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title BasicMath
+ * @dev Provides safe addition and subtraction without using SafeMath library.
+ * Returns a result and a boolean error flag.
+ */
+contract BasicMath {
+
+    /// @notice Adds two unsigned integers and checks for overflow.
+    /// @param _a First number
+    /// @param _b Second number
+    /// @return sum The sum of the inputs or 0 if overflow occurs
+    /// @return error True if overflow occurred, false otherwise
+    function adder(uint _a, uint _b) public pure returns (uint sum, bool error) {
+        unchecked {
+            sum = _a + _b;
+            if (sum < _a) {
+                // Overflow occurred
+                return (0, true);
+            }
+            return (sum, false);
+        }
+    }
+
+    /// @notice Subtracts two unsigned integers and checks for underflow.
+    /// @param _a First number
+    /// @param _b Second number
+    /// @return difference The difference or 0 if underflow occurs
+    /// @return error True if underflow occurred, false otherwise
+    function subtractor(uint _a, uint _b) public pure returns (uint difference, bool error) {
+        unchecked {
+            if (_b > _a) {
+                // Underflow occurred
+                return (0, true);
+            }
+            difference = _a - _b;
+            return (difference, false);
+        }
+    }
+}
