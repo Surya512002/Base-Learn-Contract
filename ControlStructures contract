@@ -1,0 +1,68 @@
+ create a File name called ControlStructures.sol
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title ControlStructures
+ * @dev Demonstrates control structures, conditionals, and custom errors in Solidity.
+ */
+contract ControlStructures {
+
+    // Custom error for AfterHours condition
+    error AfterHours(uint256 providedTime);
+
+    /// @notice FizzBuzz logic using if/else conditions.
+    /// @param _number Input number
+    /// @return result String result based on divisibility
+    function fizzBuzz(uint _number) public pure returns (string memory result) {
+        if (_number % 3 == 0 && _number % 5 == 0) {
+            return "FizzBuzz";
+        } else if (_number % 3 == 0) {
+            return "Fizz";
+        } else if (_number % 5 == 0) {
+            return "Buzz";
+        } else {
+            return "Splat";
+        }
+    }
+
+    /// @notice Returns greetings or throws errors based on the time of day.
+    /// @param _time A uint representing the time in 24-hour format (e.g., 1330 for 1:30 PM)
+    /// @return message A string message if no error is triggered
+    function doNotDisturb(uint _time) public pure returns (string memory message) {
+        // 1️⃣ Panic if _time >= 2400
+        if (_time >= 2400) {
+            // "panic" is done via assert() failing intentionally
+            assert(_time < 2400); 
+        }
+
+        // 2️⃣ After hours (before 8:00 or after 22:00)
+        if (_time > 2200 || _time < 800) {
+            revert AfterHours(_time);
+        }
+
+        // 3️⃣ Lunchtime 12:00 - 12:59
+        if (_time >= 1200 && _time <= 1259) {
+            revert("At lunch!");
+        }
+
+        // 4️⃣ Morning 8:00 - 11:59
+        if (_time >= 800 && _time <= 1199) {
+            return "Morning!";
+        }
+
+        // 5️⃣ Afternoon 13:00 - 17:59
+        if (_time >= 1300 && _time <= 1799) {
+            return "Afternoon!";
+        }
+
+        // 6️⃣ Evening 18:00 - 22:00
+        if (_time >= 1800 && _time <= 2200) {
+            return "Evening!";
+        }
+
+        // Just in case (should never reach here)
+        return "Unknown time!";
+    }
+}
